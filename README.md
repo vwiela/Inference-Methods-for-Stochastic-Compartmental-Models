@@ -1,1 +1,1 @@
-# Inference-Methods-for-Stochastic-Compartmenal-Models
+# Inference-Methods-for-Stochastic-Compartmental-Models
