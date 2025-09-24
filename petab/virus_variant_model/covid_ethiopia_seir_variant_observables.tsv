@@ -1,0 +1,5 @@
+observableId	observableName	observableFormula	noiseFormula
+prev_wild	Prevalence wild type	(Rec_wild + Rec_var_wild + Exp_var_wild + Infc_var_wild) / (Sus + Exp_var + Infc_var + Rec_var + Exp_wild + Infc_wild + Rec_wild + Exp_var_wild + Infc_var_wild + Rec_var_wild)	noiseParameter1_prev_wild
+prev_var	Prevalence variant	(Rec_var + Rec_var_wild) / (Sus + Exp_var + Infc_var + Rec_var + Exp_wild + Infc_wild + Rec_wild + Exp_var_wild + Infc_var_wild + Rec_var_wild)	noiseParameter1_prev_var
+prev_comb	Prevalence combined	(Rec_var + Rec_wild + Rec_var_wild + Exp_var_wild + Infc_var_wild) / (Sus + Exp_var + Infc_var + Rec_var + Exp_wild + Infc_wild + Rec_wild + Exp_var_wild + Infc_var_wild + Rec_var_wild)	noiseParameter1_prev_comb
+infc_rel_nat	Infected national (relative)	observableParameter1_infc_rel_nat * (Infc_wild + Infc_var + Infc_var_wild) / (Sus + Exp_var + Infc_var + Rec_var + Exp_wild + Infc_wild + Rec_wild + Exp_var_wild + Infc_var_wild + Rec_var_wild)	noiseParameter1_infc_rel_nat

@@ -1,0 +1,11 @@
+parameter_file: covid_ethiopia_seir_variant_parameters.tsv
+format_version: 1
+problems:
+- condition_files:
+  - covid_ethiopia_seir_variant_conditions.tsv
+  measurement_files:
+  - covid_ethiopia_seir_variant_measurements.tsv
+  sbml_files:
+  - covid_ethiopia_seir_variant_model.sbml
+  observable_files:
+  - covid_ethiopia_seir_variant_observables.tsv
