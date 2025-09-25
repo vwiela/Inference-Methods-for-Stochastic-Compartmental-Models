@@ -36,7 +36,7 @@ end
     using ParticlesDE
     using StaticDistributions
 
-    include(joinpath(base_pat, "code/epmodels/virus_variant_est_infc.jl"))
+    include(joinpath(base_pat, "code/epmodels/sir_model.jl"))
     include(joinpath(base_path,"code/epmodels/utils/posEM.jl"))
     include(joinpath(base_path,"code/utils/utilities.jl"))
     
