@@ -49,7 +49,7 @@ function retransform_chain(chain, lb, ub)
     )
 end
 
-function visualize_chain(chain, save_path ; re_transform=false, true_par_dict=nothing)
+function visualize_chain(chain; save_path=nothing, re_transform=false, true_par_dict=nothing)
     niter = size(chain,1)
     nparams = size(chain,2)-1
     nchains = size(chain,3)
@@ -73,14 +73,17 @@ function visualize_chain(chain, save_path ; re_transform=false, true_par_dict=no
         if !isnothing(true_par_dict)
             vline!(plt, [true_par_dict[par]], color="black", label="True value")
         end
-
-        savefig(plt, "$(save_path)_$(String(par))_density.png")
+        display(plt)
+        if !isnothing(save_path)
+            savefig(plt, "$(save_path)_$(String(par))_density.png")
+        end
     end
-
+    
     plt = StatsPlots.plot(chain,  seriestype=:traceplot)
-
-    savefig(plt, "$(save_path)_traceplot.png")
-
+    display(plt)
+    if !isnothing(save_path)
+        savefig(plt, "$(save_path)_traceplot.png")
+    end
 end
 
 function mode_of_chain(chain; return_dict=false)
@@ -146,9 +149,9 @@ function MCMC_diagnostics(chain; autocorlag=100)
     # return as data frame 
     diagnostics_df = DataFrame(parameter=chain.name_map.parameters, 
     rhat=rhat_values.nt.rhat, gelman=gelman_diag.nt.psrf, ess_basic=ess_values.nt.ess)
-    for (i, gewe_arr) in enumerate(geweke_values)
-        diagnostics_df[!, "Geweke_chain_$i"] = gewe_arr.nt.pvalue
-    end
+    # for (i, gewe_arr) in enumerate(geweke_values)
+    #     diagnostics_df[!, "Geweke_chain_$i"] = gewe_arr.nt.pvalue
+    # end
     
     return diagnostics_df
 end

@@ -13,7 +13,6 @@ using SymbolicUtils
 
 include("utils/posEM.jl")
 
-print(4)
 # parameters: [gamma_inverse, kappa_inverse, beta, t_event, scaling, initial_infc, variant_infc]
 
 function bind_sbml_params(prob, values::Vector{Float64})

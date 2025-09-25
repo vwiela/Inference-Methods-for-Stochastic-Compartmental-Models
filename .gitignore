@@ -1,2 +1,4 @@
 Particles.jl/*
 ParticlesDE.jl/*
+*/__pycache__/
+.vscode/*
