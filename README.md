@@ -27,8 +27,6 @@ Following folders and content are available in this repository:
 
 
 **References:**
-Gudina EK, Ali S, Girma E, et al (2021) Seroepidemiology and model-based prediction
-of SARS CoV 2 in Ethiopia: longitudinal cohort study among front-line hospital
-workers and communities. The Lancet Global Health 9(11):e1517–e1527. https://
-doi.org/10.1016/S2214-109X(21)00386-7
+
+- Gudina EK, Ali S, Girma E, et al (2021) Seroepidemiology and model-based prediction of SARS CoV 2 in Ethiopia: longitudinal cohort study among front-line hospital workers and communities. The Lancet Global Health 9(11):e1517–e1527. https://doi.org/10.1016/S2214-109X(21)00386-7
 
