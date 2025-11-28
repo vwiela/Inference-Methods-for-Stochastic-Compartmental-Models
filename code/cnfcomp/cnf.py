@@ -4,15 +4,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from scipy.stats import ks_1samp
-from sklearn.metrics.pairwise import rbf_kernel
-from sklearn.decomposition import PCA
-from scipy.stats import gaussian_kde
-import matplotlib as mpl
-from matplotlib.gridspec import GridSpec
-from matplotlib.cm import ScalarMappable
-import seaborn as sns
-
 # import bayesflow as bf
 import bayesflow.diagnostics as diag
 from bayesflow.amortizers import AmortizedPosterior
@@ -186,7 +177,7 @@ def validate_cnf(
 
     # Create ECDF plot
     f = diag.plot_sbc_ecdf(post_samples, prior_samples, param_names=prior_dict["prior"].param_names)
-    outfile = savepath + "figures/sbc_ecdf_1_" + id
+    outfile = savepath + "figures/sbc_ecdf_1"
     Path(outfile).parent.mkdir(exist_ok=True, parents=True)
     f.savefig(outfile + ".pdf")
 
@@ -198,13 +189,13 @@ def validate_cnf(
         legend_fontsize=12,
         fig_size=(6, 5),
     )
-    outfile = savepath + "figures/sbc_ecdf_2_" + id
+    outfile = savepath + "figures/sbc_ecdf_2"
     f.savefig(outfile + ".pdf")
 
     f = diag.plot_sbc_histograms(
         post_samples, prior_samples, param_names=prior_dict["prior"].param_names
     )
-    outfile = savepath + "figures/sbc_histogram_" + id
+    outfile = savepath + "figures/sbc_histogram"
     f.savefig(outfile + ".pdf")
 
     post_samples = trainer.amortizer.sample(validation_sims, n_samples=1000)
@@ -212,13 +203,13 @@ def validate_cnf(
     post_samples = prior_dict["transform_inv"](post_samples)
 
     f = diag.plot_recovery(post_samples, prior_samples, param_names=prior_dict["prior"].param_names)
-    outfile = savepath + "figures/recovery_" + id
+    outfile = savepath + "figures/recovery"
     f.savefig(outfile + ".pdf")
 
     f = diag.plot_z_score_contraction(
         post_samples, prior_samples, param_names=prior_dict["prior"].param_names
     )
-    outfile = savepath + "figures/z_score_contraction_" + id
+    outfile = savepath + "figures/z_score_contraction"
     f.savefig(outfile + ".pdf")
     plt.close("all")
 
@@ -235,14 +226,14 @@ def infer_cnf(amortizer, data, prior_dict, savepath, id):
     post_samples_obs = prior_dict["transform_inv"](post_samples_obs)
 
     # Save post_samples to csv
-    outfile = savepath + "posterior_" + id + ".csv"
+    outfile = savepath + "posterior_samples.csv"
     Path(outfile).parent.mkdir(exist_ok=True, parents=True)
     df = pd.DataFrame(post_samples_obs)
     df.to_csv(outfile, index=False)
 
     # 2d plot of sample posterior draws vs prior
     f = diag.plot_posterior_2d(post_samples_obs, prior=prior_dict["prior"])
-    outfile = savepath + "figures/posterior_" + id
+    outfile = savepath + "figures/posterior"
     Path(outfile).parent.mkdir(exist_ok=True, parents=True)
     f.savefig(outfile + ".pdf")
     plt.close("all")

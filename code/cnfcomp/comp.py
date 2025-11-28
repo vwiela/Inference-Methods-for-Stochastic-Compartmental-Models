@@ -446,21 +446,21 @@ def plot_results(
             handles, labels, ncol=1, fontsize=32, loc="lower right", bbox_to_anchor=(0.95, 0.1)
         )
         axs[0][0].text(
-            -0.7,
+            -0.75,
             1.0,
             "A",
             transform=axs[0][0].transAxes,
-            fontsize=24,
+            fontsize=40,
             fontweight="bold",
             verticalalignment="top",
             horizontalalignment="left",
         )
         ax_infc.text(
-            -0.35,
+            -0.4,
             1.0,
             "B",
             transform=ax_infc.transAxes,
-            fontsize=24,
+            fontsize=40,
             fontweight="bold",
             verticalalignment="top",
             horizontalalignment="left",
@@ -470,11 +470,11 @@ def plot_results(
             handles, labels, ncol=1, fontsize=32, loc="lower right", bbox_to_anchor=(0.9, 0.03)
         )
         axs[0][0].text(
-            -0.7,
+            -0.75,
             1.0,
             "A",
             transform=axs[0][0].transAxes,
-            fontsize=24,
+            fontsize=40,
             fontweight="bold",
             verticalalignment="top",
             horizontalalignment="left",
@@ -484,7 +484,7 @@ def plot_results(
             1.0,
             "B",
             transform=ax_infc.transAxes,
-            fontsize=24,
+            fontsize=40,
             fontweight="bold",
             verticalalignment="top",
             horizontalalignment="left",
@@ -496,7 +496,7 @@ def plot_results(
             1.0,
             "A",
             transform=axs[0][0].transAxes,
-            fontsize=24,
+            fontsize=40,
             fontweight="bold",
             verticalalignment="top",
             horizontalalignment="left",
@@ -506,7 +506,7 @@ def plot_results(
             1.0,
             "B",
             transform=ax_infc.transAxes,
-            fontsize=24,
+            fontsize=40,
             fontweight="bold",
             verticalalignment="top",
             horizontalalignment="left",
@@ -569,15 +569,25 @@ def plot_histograms(
 
     for i in range(n_params):
         ax = axes[i]
-        sns.histplot(prior[:, i], alpha=0.5, label="Prior", color="gray", ax=ax, kde=True)
+        sns.histplot(prior[:, i], alpha=0.5, label="Prior", color="gray", ax=ax)
         sns.histplot(
-            posterior_cnf[:, i], alpha=1, label="Posterior CNF", color=post_1_color, ax=ax, kde=True
+            posterior_cnf[:, i],
+            alpha=1,
+            label="Posterior CNF",
+            color=post_1_color,
+            ax=ax,
+            kde=True,
         )
         sns.histplot(
             posterior_pf[:, i], alpha=1, label="Posterior PF", color=post_2_color, ax=ax, kde=True
         )
 
-        ax.set_xlabel(param_names[i], fontsize=12)
+        if i == 0 or i == 3:
+            ax.set_ylabel("Count", fontsize=36)
+        else:
+            ax.set_ylabel("", fontsize=36)
+        ax.set_xlabel(param_names[i], fontsize=36)
+        ax.tick_params(labelsize=28)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
@@ -587,7 +597,14 @@ def plot_histograms(
 
     # Create a single legend below all subplots
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=3, frameon=False, fontsize=12)
+    fig.legend(
+        handles,
+        labels,
+        loc="lower center",
+        ncol=3,
+        bbox_to_anchor=(0.5, -0.12),
+        fontsize=40,
+    )
 
     plt.tight_layout(rect=[0, 0.05, 1, 0.95])
     return fig
