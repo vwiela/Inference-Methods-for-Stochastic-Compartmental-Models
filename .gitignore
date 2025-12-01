@@ -3,5 +3,4 @@ ParticlesDE.jl/*
 */__pycache__/
 .vscode/*
 /output/CNF_Experiments/*
-/output/PF_Experiments/*
 /output/ParticleFilter/*
