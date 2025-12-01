@@ -3,6 +3,7 @@ from scipy.stats import binom, truncnorm
 import math
 
 from julia import Main
+
 import os
 
 import random
@@ -15,7 +16,7 @@ _variant_model_initialized = False
 def _load_variant_model(N, T):
     global _variant_model_initialized, _cached_variant_model
     if not _variant_model_initialized:
-        jl_path = os.path.join(os.path.dirname(__file__), "virus_variant_est_infc_2.jl")
+        jl_path = os.path.join(os.path.dirname(__file__), "virus_variant_est_infc.jl")
         Main.include(jl_path)
         _variant_model_initialized = True
         _cached_variant_model = Main.SEIR_Variant_SDE(N, T)
