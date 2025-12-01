@@ -10,7 +10,7 @@ The code sould be usable on any local machine where Python 3.12 and Julia 1.10 a
 - Manifest.toml
 - Project.toml
 
-Additionally, the Particles.jl and ParticlesDE.jl packages must be installed from ParticleFiltser.jl (https://github.com/lcontento/ParticleFilters.jl).
+Additionally, the Particles.jl and ParticlesDE.jl packages must be installed from ParticleFilters.jl (https://github.com/lcontento/ParticleFilters.jl).
 
 ### CNF
 - requirements.txt
