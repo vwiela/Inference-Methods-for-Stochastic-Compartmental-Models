@@ -13,6 +13,7 @@ using SymbolicUtils
 
 include("utils/posEM.jl")
 
+
 # parameters: [gamma_inverse, kappa_inverse, beta, t_event, scaling, initial_infc, variant_infc]
 
 function bind_sbml_params(prob, values::Vector{Float64})
@@ -94,9 +95,8 @@ function SEIR_Variant_Model_Simulation(sdeprob, params)
     #if params[1:4] != sdeprob.p[1:4]
     #    sdeprob = remake(sdeprob, p=[params[1:4]..., 1.0])
     #end
-    params2 = [params[1:4]..., 1.0]
+    params2 = [params[3], params[2], params[1], params[4], 1.0]
     sdeprob = remake(sdeprob; p=bind_sbml_params(sdeprob, params2))
-
     # get N from the SDEProblem
     N = sum(sdeprob.u0)
     # remake SDEProblem with the new initial infection count

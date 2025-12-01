@@ -11,6 +11,7 @@ using SBMLToolkit
 using Catalyst
 using SymbolicUtils
 
+
 include("utils/posEM.jl")
 
 
@@ -20,7 +21,8 @@ function SIR_SDEProblem(parammap, N; endtime=100.0, initial_state=nothing)
     tspan = (0., endtime)
     
     @parameters β γ
-    @variables t s(t) i(t)
+    @independent_variables t
+    @variables s(t) i(t)
     D = Differential(t)
     
     drift = [D(s) ~ -β*s*i,
@@ -29,16 +31,17 @@ function SIR_SDEProblem(parammap, N; endtime=100.0, initial_state=nothing)
     diffusion = [sqrt(β*s*i/N) 0 ;-sqrt(β*s*i/N) sqrt(γ*i/N)]
     
     @named sde = SDESystem(drift, diffusion, t, [s, i], [β, γ])
-
+    sde_simplified = complete(sde) 
+    
     if isnothing(parammap)
         parammap = [β=>0.2, γ=>0.05]
     end
     
     # define SDE problem
     if isnothing(initial_state)
-        sdeprob = SDEProblem(sde, [], tspan, parammap)
+        sdeprob = SDEProblem(sde_simplified, [], tspan, parammap)
     else
-        sdeprob = SDEProblem(sde, initial_state, tspan, parammap)
+        sdeprob = SDEProblem(sde_simplified, initial_state, tspan, parammap)
     end
 
 
@@ -51,9 +54,12 @@ function SIR_Model_Simulation(sdeprob, params)
     Function to simulate the SIR model. 
     It returns the timepoints and corresponding state-vectors of the system.
     """
-    if params != sdeprob.p[1:2]
-        sdeprob = remake(sdeprob, p=params)
-    end
+    #if params != sdeprob.p[1:2]
+    @parameters β γ
+    params2= [β => params[1], γ => params[2]]
+    
+    sdeprob = remake(sdeprob, p=params2)
+    #end
 
     solve_alg = PositiveEM()
     solve_kwargs = (dt=1e-1, dense=true, force_dtmin=true)
