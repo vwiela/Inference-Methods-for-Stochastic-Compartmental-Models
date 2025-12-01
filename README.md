@@ -85,6 +85,12 @@ def load_validate_infer(
     """Load trained CNF model from checkpoint and run inference."""
 ```
 
+## PF Inference
+For inference using the pseudo-marginal MH algorithm, the scripts
+`ModelFilterRun.jl` need to be run. The scripts support parallelization across independent runs, if several workers are available. Hyperparameters must be changed within the scripts before running.
+
+Evaluation of the results in the jupyter notebooks, directly uses the result files, saved by the scripts.
+
 **References:**
 
 - Gudina EK, Ali S, Girma E, et al (2021) Seroepidemiology and model-based prediction of SARS CoV 2 in Ethiopia: longitudinal cohort study among front-line hospital workers and communities. The Lancet Global Health 9(11):e1517–e1527. https://doi.org/10.1016/S2214-109X(21)00386-7
