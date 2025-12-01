@@ -41,11 +41,11 @@ end
     include(joinpath(base_path,"code/utils/utilities.jl"))
 
     # Slurm Job-array if run on cluster
-    task_id_str = get(ENV, "SLURM_ARRAY_TASK_ID", 0)
-    task_id = parse(Int64, task_id_str)
+    # task_id_str = get(ENV, "SLURM_ARRAY_TASK_ID", 0)
+    # task_id = parse(Int64, task_id_str)
 
     # set task_id manually if run locally
-    # task_ id = 1
+    task_id = 1
 
     # set hyperparamters
     niter = 50000
