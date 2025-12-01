@@ -6,13 +6,22 @@ This repository contains the code to reproduce and results used in the work "Ass
 ## Usage
 The code sould be usable on any local machine where Python 3.12 and Julia 1.10 are installed. The methods have the following specific requirements.
 
-### PF
+**Note:** The use of Julia and Python interactively, does need some caution when setting up the environments. It is recommended to first build the Python virtual environemnt, then configure the Julia callable, before installing _pyjulia_(https://github.com/JuliaPy/pyjulia) and _PyCall.jl_ (https://github.com/JuliaPy/PyCall.jl). Guidelines on how to use the local python environment in PyCall can be found [here](https://github.com/JuliaPy/PyCall.jl).
+
+Alternatively, using [PythonCall.jl](https://github.com/JuliaPy/pyjulia?tab=readme-ov-file) provides a harmonic interface between Python and Julia.
+
+Alternatively, it is also possible to use a different Julia callable for the call from Python than for the native Julia calculations. User should only make sure, that the same version is used.
+
+Independent of the chosen Julia and Python integration, the requirements for both are listed in the following files.
+
+### Julia
 - Manifest.toml
 - Project.toml
 
-Additionally, the Particles.jl and ParticlesDE.jl packages must be installed from ParticleFilters.jl (https://github.com/lcontento/ParticleFilters.jl).
+Additionally, the Particles and ParticlesDE packages must be installed from ParticleFilters.jl (https://github.com/lcontento/ParticleFilters.jl).
 
-### CNF
+
+### Python
 - requirements.txt
 
 ## Structure

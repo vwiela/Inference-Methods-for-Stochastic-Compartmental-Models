@@ -3,3 +3,4 @@ ParticlesDE.jl/*
 */__pycache__/
 .vscode/*
 /output/ParticleFilter/*
+/test_env/*
