@@ -4,7 +4,7 @@ This repository contains the code to reproduce and results used in the work "Ass
 
 
 ## Usage
-The code sould be usable on any local machine where Python 3.12 and Julia 1.10 are installed. The methods have the following specific requirements.
+The code sould be usable on any local machine where Python 3.10 and Julia 1.10 are installed. The methods have the following specific requirements.
 
 **Note:** The use of Julia and Python interactively, does need some caution when setting up the environments. It is recommended to first build the Python virtual environemnt, then configure the Julia callable, before installing _pyjulia_(https://github.com/JuliaPy/pyjulia) and _PyCall.jl_ (https://github.com/JuliaPy/PyCall.jl). Guidelines on how to use the local python environment in PyCall can be found [here](https://github.com/JuliaPy/PyCall.jl).
 
