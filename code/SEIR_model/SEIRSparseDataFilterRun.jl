@@ -142,7 +142,7 @@ end
     # include the ParticleFilter Setup
     if noise_model == "binomial"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_sparse_binomial_and_normal_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/seir2v_synth_sparse_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
 	    prev_counts = data_df[!, "Seroprev"]
 
@@ -174,7 +174,7 @@ end
         print("Binomial noise model not implemented yet.")
     elseif noise_model == "normal"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_sparse_binomial_and_normal_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/seir2v_synth_sparse_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
         infc_counts = [x == -1 ? missing : x for x in infc_counts]
@@ -261,7 +261,7 @@ complete_chain = setinfo(complete_chain, (start_time=1.0, stop_time=stop_time))
 print("Mean duration per chain: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/ParticleFilter")
+result_folder = joinpath(basepath, "output/PF_Experiments/seir2v_full_sparse_$(dataset)")
 
 h5open(result_folder * "/sparse_$(dataset)_$(noise_model)_noise_$(prior)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)

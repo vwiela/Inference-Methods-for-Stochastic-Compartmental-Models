@@ -210,7 +210,7 @@ stop_time = mean([all_chains[i].time for i in 1:nworkers()])
 print("Mean runtime for $nparticles particles $niter iterations: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/ParticleFilter")
+result_folder = joinpath(basepath, "output/sir_dense_$(dataset)")
 
 h5open(result_folder * "/SIR_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)

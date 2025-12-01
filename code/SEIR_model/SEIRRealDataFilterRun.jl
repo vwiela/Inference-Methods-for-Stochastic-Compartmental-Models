@@ -88,7 +88,7 @@ end
     tobs = unique(tobs);
 
     # data extracted from petab file
-    data = CSV.read(base_path * "/data/seir2v_ethiopia_simon.csv", DataFrame) 
+    data = CSV.read(base_path * "/data/seir2v_real_ethiopia.csv", DataFrame) 
     print(data)
 
     real_data = Vector{Vector{Union{Missing, Float64}}}()
@@ -219,13 +219,13 @@ complete_chain = setinfo(complete_chain, (start_time=1.0, stop_time=stop_time))
 print("Mean duration per chain: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/ParticleFilter")
+result_folder = joinpath(basepath, "output/PF_Experiments/seir2v_full_real_ethiopia")
 
-h5open(result_folder * "/output/results/real_$(noise_model)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
+h5open(result_folder * "/real_$(noise_model)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)
 end
 
 
-open(result_folder * "/output/results/time_real_$(noise_model)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.txt", "w") do file
+open(result_folder * "/time_real_$(noise_model)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.txt", "w") do file
     write(file, stop_time)
 end
