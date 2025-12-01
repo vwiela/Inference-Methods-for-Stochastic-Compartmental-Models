@@ -4,7 +4,7 @@ This repository contains the code to reproduce and results used in the work "Ass
 
 
 ## Usage
-The code sould be usable on any local machine where Python 3.12 and Julia 1.10 are installed. The methods have the following specific requirements.
+The code sould be usable on any local machine where Python 3.10 and Julia 1.10 are installed. The methods have the following specific requirements.
 
 ### PF
 - Manifest.toml
