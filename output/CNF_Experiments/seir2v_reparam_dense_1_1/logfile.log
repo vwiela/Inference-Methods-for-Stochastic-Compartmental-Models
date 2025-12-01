@@ -1,0 +1,3 @@
+2025-09-26 11:31:39,463 INFO Time for training Amortizer_reparam_dense_1_1: 28730.022843897
+2025-09-26 11:33:33,915 INFO Time for validating Amortizer_reparam_dense_1_1: 431.34703729399916
+2025-09-26 11:34:43,750 INFO Time for infering dense_1_1 via Amortizer_reparam_dense_1_1: 121.89722786199854

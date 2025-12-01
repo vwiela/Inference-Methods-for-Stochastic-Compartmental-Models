@@ -1,0 +1,3 @@
+2025-09-25 14:56:44,960 INFO Time for training Amortizer_sir_dense_1_paper: 13883.034752722
+2025-09-25 14:57:22,804 INFO Time for validating Amortizer_sir_dense_1_paper: 230.2475334259998
+2025-09-25 14:57:29,471 INFO Time for infering sir_dense_1 via Amortizer_sir_dense_1_paper: 17.746465913000065

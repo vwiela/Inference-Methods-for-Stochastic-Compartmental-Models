@@ -1,0 +1,3 @@
+2025-09-28 01:05:43,302 INFO Time for training Amortizer_normal_dense_2_2: 24542.463520988
+2025-09-28 01:07:27,329 INFO Time for validating Amortizer_normal_dense_2_2: 459.74023405299886
+2025-09-28 01:08:51,441 INFO Time for infering dense_2_2 via Amortizer_normal_dense_2_2: 161.43129142899852

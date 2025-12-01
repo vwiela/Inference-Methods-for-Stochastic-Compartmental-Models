@@ -1,0 +1,3 @@
+2025-09-23 19:59:59,158 INFO Time for training Amortizer_full_sparse_1_1_2: 27369.216040891002
+2025-09-23 20:02:45,465 INFO Time for validating Amortizer_full_sparse_1_1_2: 551.7880618660056
+2025-09-23 20:04:55,175 INFO Time for infering sparse_1_1_2 via Amortizer_full_sparse_1_1_2: 197.09696347499994
