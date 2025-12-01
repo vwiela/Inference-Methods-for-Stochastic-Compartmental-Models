@@ -2,3 +2,6 @@ Particles.jl/*
 ParticlesDE.jl/*
 */__pycache__/
 .vscode/*
+/ouput/CNF_Experiments/*
+/output/PF_Experiments/*
+/output/ParticleFilter/*
