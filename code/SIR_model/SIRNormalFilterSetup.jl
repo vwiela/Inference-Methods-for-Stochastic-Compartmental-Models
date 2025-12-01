@@ -59,7 +59,7 @@ function Random.rand(rng::AbstractRNG, d::SIR_Prior)
     β = rand(Uniform(0.0, 1.0))
     γ_inv = rand(Uniform(1.0, 30.0))
     while true
-        if β*γ_inv > 0.95 && β*γ_inv < 5.0
+        if β*γ_inv > 0.95 && β*γ_inv < 4.0
             break
         end
         β = rand(Uniform(0.0, 1.0))
