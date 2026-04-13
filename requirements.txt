@@ -8,3 +8,4 @@ scipy==1.12.0
 seaborn==0.13.2
 pypesto==0.5.2
 ipykernel==7.1.0
+ot==0.9.6.post1
