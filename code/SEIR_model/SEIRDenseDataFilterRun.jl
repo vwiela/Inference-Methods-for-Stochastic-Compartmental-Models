@@ -55,7 +55,8 @@ end
     noise_model ="normal"
 
     # set dataset 
-    datasets = ["1_1", "1_2", "2_1", "2_2", "3_1", "3_2"]
+    data_structure = "seir2v_full_dense"
+    datasets = ["1", "2", "3", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
     dataset = datasets[task_id+1]
 
     #set prior
@@ -83,10 +84,38 @@ end
     # parameters are in the ordering [gamma-1, kappa-1, beta, t_event, scaling, I0] in the SDEProblem 
     true_pars = [
         [17, 5, 0.08, 150, 3, 500], 
+        [17, 5, 0.08, 150, 3, 500],
         [11.7, 8.4, 0.23, 222, 1.6, 560], 
-        [8, 3, 0.2, 359, 4.2, 915]
-        ]
+        [11.7, 8.4, 0.23, 222, 1.6, 560], 
+        [15.4679760959048, 3.96762549129714, 0.0654673610905963, 8.39996128563389, 226.130832895375, 477.343419821419],
+        [11.5651008051957, 6.10762399610441, 0.16045988656059, 8.33515376781609, 318.663788904886, 169.636098431087],
+        [24.04616013764, 6.63138310737117, 0.042266643818475, 6.45317783091597, 122.861436432086, 789.897181984338],
+        [22.2063557301224, 4.37038385224586, 0.0807212846539986, 1.91421028403669, 274.049951514103, 831.153990580889],
+        [23.3447867279627, 3.52006354866419, 0.0631048612249476, 6.43376938757196, 329.679952772848, 78.9634897174291],
+        [16.6579183916909, 3.34826819530982, 0.069939186491281, 4.94727112652624, 289.793609106831, 604.841083559216],
+        [17.9833750413301, 6.59095786277281, 0.143032422653819, 3.55476957162995, 317.186988222796, 859.741707222039],
+        [16.7696172208108, 5.57462622032648, 0.178561014114138, 1.17622184822688, 172.369286423695, 31.792202870718],
+        [18.6280910303071, 9.92886224872726, 0.180681787374913, 1.06898138665638, 180.038269998219, 157.778698336533],
+        [8.51205524253091, 3.80050416048443, 0.173094334769164, 4.66100276373362, 299.804042986972, 327.208829481153]
+    ]
+
+
     true_par = true_pars[parse(Int, split(dataset, "_")[1])]
+    # for the comparison with reparametrized model on same datasets
+    # true_pars_comparison = [
+    # [8.62787761200484, 5, 0.375393336602948, 138.784181997657, 2.4102852603369, 563.002110927854],
+    # [1.83379769205424, 5, 0.661725539272205, 353.890179219662, 18.735364202169,410.501304231619],
+    # [12.4769355515914, 5, 0.210402719204872, 252.829191760759, 3.56650339976819, 551.701765710471],
+    # [16.430494029293, 5, 0.217055292292094, 338.692304381882, 2.79907789979129, 114.306022189708],
+    # [4.61184924258315, 5, 0.267797649237272, 171.070348733889, 11.121576280385, 227.178559309092],
+    # [5.7915840251576, 5, 0.21016274588375, 337.676071051568, 0.926929799662752, 497.233166052768],
+    # [19.2850506759658, 5, 0.0917217775156078, 141.980152788226, 5.14955742021982, 748.200689682221],
+    # [8.70903234281894, 5, 0.121946259625974, 167.766708540823, 9.21429213404834, 940.178217744607],
+    # [8.68519433099923, 5, 0.301791523073935, 264.989121791907, 0.928847969446947, 135.078937525541],
+    # [22.2234541344768, 5, 0.0524848937409058, 147.515301583979, 1.60622634001999, 428.88520308839]
+    # ]
+    # true_par = true_pars_comparison[task_id+1]
+
 end
 
 
@@ -141,7 +170,7 @@ end
     # include the ParticleFilter Setup
     if noise_model == "binomial"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_dense_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_full_dense/$(data_structure)_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
 
@@ -166,7 +195,7 @@ end
         print("Binomial noise model not implemented yet.")
     elseif noise_model == "normal"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_dense_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_full_dense/$(data_structure)_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
 
@@ -252,4 +281,44 @@ open(result_folder * "/time_dense_$(dataset)_$(noise_model)_noise_$(prior)_"*str
 end
 
 
+# get true parameter dictionary
+true_par_dict = Dict(
+                :beta => true_par[3],
+                :gamma => true_par[1], 
+                :kappa => true_par[2], 
+                :tevent => true_par[4],
+                :scaling => true_par[5],
+                :I0 => true_par[6]);
+                
+if niter > 10000
+    burnin = Int(niter-10000)
+else
+    burnin = Int(niter/10)
+end
+    
+mixed_chain = complete_chain[burnin:end]
 
+
+# evaluate the runs and store last samples for further use as npy.
+include(joinpath(base_path,"code/utils/EvaluateParticleFilter.jl"))
+nparams = length(names(complete_chain))
+stuck_flags = Bool[]
+for c in 1:nchains
+    chain_slice = mixed_chain[:, :, c]
+    all_same = any(abs.(quantile(chain_slice).nt.var"2.5%" - quantile(chain_slice).nt.var"97.5%") .< 1e-10)
+    push!(stuck_flags, all_same)
+end
+if all(stuck_flags)
+   error("All chains got stuck! No usable chains remain.")
+else
+    mixed_chain = mixed_chain[:,:, findall(!, stuck_flags)]
+end
+
+save_samples=false
+if save_samples
+    npzwrite(result_folder * "/dense_$(dataset)_"*string(nchains)*"chs_"*string(niter)*"it_"*string(nparticles)*"p.npy", mixed_chain.value.data)	
+end
+
+
+diagnostic_df = MCMC_diagnostics(mixed_chain; autocorlag=autocorlag)
+CSV.write(result_folder*"/diagnostics_dense_$(dataset).csv", diagnostic_df)
