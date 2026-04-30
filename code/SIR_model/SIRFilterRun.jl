@@ -3,7 +3,8 @@ using Distributed # package for distributed computing in julia
 
 # instantiate and precompile environment in all processes
 @everywhere begin
-  using Pkg; Pkg.activate(dirname(pwd()))
+  base_path = "Inference-Methods-for-Stochastic-Compartmental-Models"
+  using Pkg; Pkg.activate(base_path)
   Pkg.instantiate(); Pkg.precompile()
 end
 
@@ -31,7 +32,7 @@ end
     using ParticlesDE
     using StaticDistributions
 
-    include(joinpath(base_pat, "code/epmodels/virus_variant_est_infc.jl"))
+    include(joinpath(base_path, "code/epmodels/sir_model.jl"))
     include(joinpath(base_path,"code/epmodels/utils/posEM.jl"))
     include(joinpath(base_path,"code/utils/utilities.jl"))
     
@@ -50,7 +51,7 @@ end
     noise_model ="normal"
 
     # set dataset 
-    datasets = ["1", "2"]
+    datasets = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
     dataset = datasets[task_id+1]
 
     # SIR-model settings and parameters
@@ -68,7 +69,18 @@ end
     # parameters are in the ordering [beta, gamma]
     true_pars = [
         [0.2, 0.05], 
-        [0.22, 0.2]]
+        [0.22, 0.2],
+        [0.430627818147511, 1/7.30774847648868],
+    	[0.334587638232734, 1/11.0538305689998],
+    	[0.332865045863081, 1/10.0519095319788],
+        [0.496227847255627, 1/8.29271878472793],
+        [0.0444706605366109, 1/29.304886912704],
+        [0.587056974440183, 1/7.12626648556889],
+        [0.392045841507879, 1/9.93678964409357],
+        [0.437955267549603, 1/8.50514341810628],
+        [0.219283474759941, 1/14.7522040091955],
+    	[0.912100668563262, 1/1.23966200311736]
+        ]
     true_par = true_pars[parse(Int, dataset)]
 end    
 
@@ -81,7 +93,7 @@ end
     # include the ParticleFilter Setup
     if noise_model == "binomial"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/sir_dense_normal_and_binomial_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SIR/sir_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection count"]
         prev_counts = data_df[!, "seroprev"]
 
@@ -106,7 +118,7 @@ end
         print("Binomial noise model not implemented yet.")
     elseif noise_model == "normal"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/sir_dense_normal_and_binomial_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SIR/sir_$dataset.csv", DataFrame) # cluster
         # print(data_df)
         infc_counts = data_df[!, "infection count"]
         prev_counts = data_df[!, "seroprev"]
@@ -210,7 +222,7 @@ stop_time = mean([all_chains[i].time for i in 1:nworkers()])
 print("Mean runtime for $nparticles particles $niter iterations: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/sir_dense_$(dataset)")
+result_folder = joinpath(basepath, "output/PF_Experiments/SIR/sir_dense_$(dataset)")
 
 h5open(result_folder * "/SIR_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)
@@ -221,5 +233,51 @@ open(result_folder * "/time_SIR_$(dataset)_"*string(nworkers())*"chs_"*string(ni
     write(file, stop_time)
 end
 
+
+# evaluate the runs and store last samples for nils as npy.
+include(joinpath(base_path,"code/utils/EvaluateParticleFilter.jl"))
+
+figure_folder = mkpath(result_folder * "/figures")
+
+# set parameter whether to save samples for nils
+save_samples = false
+
+# get true parameter dictionary
+true_par_dict = Dict(
+                :beta => true_par[1],
+                :gamma => true_par[2];)
+                
+if niter > 10000
+    burnin = Int(niter-10000)
+else
+    burnin = Int(niter/10)
+end
+    
+mixed_chain = complete_chain[burnin:end]
+
+# check which chain is converged and remove stuck chains.
+nparams = length(names(complete_chain))
+stuck_flags = Bool[]
+for c in 1:nchains
+    chain_slice = mixed_chain[:, :, c]
+    all_same = any(abs.(quantile(chain_slice).nt.var"2.5%" - quantile(chain_slice).nt.var"97.5%") .< 1e-10)
+    push!(stuck_flags, all_same)
+end
+if all(stuck_flags)
+   error("All chains got stuck! No usable chains remain.")
+else
+    mixed_chain = mixed_chain[:,:, findall(!, stuck_flags)]
+end
+
+if size(mixed_chain, 3) == 0
+   error("All chains got stuck! No usable chains remain.")
+end
+
+if save_samples
+    npzwrite(result_folder * "/sir_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.npy", mixed_chain.value.data)	
+end
+
+diagnostic_df = MCMC_diagnostics(mixed_chain; autocorlag=autocorlag)
+CSV.write(experiment_folder*"/diagnostics_sir_$(dataset).csv", diagnostic_df)
 
 

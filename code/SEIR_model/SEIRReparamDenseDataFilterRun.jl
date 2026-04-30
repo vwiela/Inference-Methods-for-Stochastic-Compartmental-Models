@@ -65,7 +65,8 @@ using Distributed
     noise_model ="normal"
 
     # set dataset 
-    datasets = ["1_1", "1_2", "2_1", "2_2", "3_1", "3_2"]
+    data_structurer = "seir2v_reparam_dense"
+    datasets = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
     dataset = datasets[task_id+1]
 
     #set prior
@@ -92,9 +93,19 @@ using Distributed
 
     # parameters are in the ordering [e0, r0, s0, t, I0] in the SDEProblem 
     true_pars = [
-        [1.36, 22.0, 51.0, 150.0, 500.0], 
-        [2.69, 20.1, 18.72, 222, 560], 
-        [1.6, 11.0, 33.6, 359, 915]]
+    [1.36, 22, 51, 150, 500],
+    [1.36, 22, 51, 150, 500],
+    [3.23884776457237, 13.6278776120048, 20.795646236206, 138.784181997657, 563.002110927854],
+    [1.21347076669071, 6.83379769205424, 34.356867633733, 353.890179219662, 410.501304231619],
+    [2.62518116739877, 17.4769355515914, 44.4990330634393, 252.829191760759, 551.701765710471],
+    [3.56632568403169, 21.430494029293, 45.9902327200467, 338.692304381882, 114.306022189708],
+    [1.23504238580046, 9.61184924258315, 51.2910331450244, 171.070348733889, 227.178559309092],
+    [1.21717520174359, 10.7915840251576, 5.36839182016933, 337.676071051568, 497.233166052768],
+    [1.76885912747815, 24.2850506759658, 99.3094758077347, 141.980152788226, 748.200689682221],
+    [1.06203391916841, 13.7090323428189, 80.2475682116091, 167.766708540823, 940.178217744607],
+    [2.62111802534536, 13.6851943309992, 8.06722511860078, 264.989121791907, 135.078937525541],
+    [1.16639562880391, 27.2234541344768, 35.6958973970228, 147.515301583979, 428.88520308839]
+    ]
     true_par = true_pars[parse(Int, split(dataset, "_")[1])]
     
     function original_parameters(p;kappa=5)
@@ -146,7 +157,7 @@ end
     # include the ParticleFilter Setup
     if noise_model == "binomial"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_dense_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_reparam_dense/$(data_structure)_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
 	prev_counts = data_df[!, "Seroprev"]
 
@@ -170,7 +181,7 @@ end
         print("Binomial noise model not implemented yet.")
     elseif noise_model == "normal"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_dense_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_reparam_dense/$(data_structure)_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
         real_data = [[infc_counts[i], prev_counts[i]] for i in eachindex(infc_counts)]
@@ -254,7 +265,7 @@ complete_chain = setinfo(complete_chain, (start_time=1.0, stop_time=stop_time))
 print("Mean duration per chain: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/PF_Experiments/seir2v_reparam_dense_$(dataset)")
+result_folder = joinpath(basepath, "output/PF_Experiments/$(data_structure)_$(dataset)")
 
 h5open(result_folder * "/reparam_dense_$(dataset)_$(noise_model)_noise_$(prior)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)

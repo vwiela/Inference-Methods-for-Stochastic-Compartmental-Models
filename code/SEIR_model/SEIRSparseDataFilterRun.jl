@@ -55,6 +55,7 @@ end
     noise_model ="normal"
 
     # set dataset 
+    data = "seir2v_full_sparse"
     datasets = ["1_1_1", "1_1_2", "1_1_3", "1_2_1", "1_2_2", "1_2_3"]
     dataset = datasets[task_id+1]
 
@@ -83,8 +84,20 @@ end
     # parameters are in the ordering [gamma-1, kappa-1, beta, t_event, scaling, I0] in the SDEProblem 
     true_pars = [
         [17, 5, 0.08, 150, 3, 500], 
-        [11.7, 8.4, 0.23, 222, 1.6, 560]
-        ]
+        [17, 5, 0.08, 150, 3, 500],
+        [11.7, 8.4, 0.23, 222, 1.6, 560], 
+        [11.7, 8.4, 0.23, 222, 1.6, 560], 
+        [15.4679760959048, 3.96762549129714, 0.0654673610905963, 8.39996128563389, 226.130832895375, 477.343419821419],
+        [11.5651008051957, 6.10762399610441, 0.16045988656059, 8.33515376781609, 318.663788904886, 169.636098431087],
+        [24.04616013764, 6.63138310737117, 0.042266643818475, 6.45317783091597, 122.861436432086, 789.897181984338],
+        [22.2063557301224, 4.37038385224586, 0.0807212846539986, 1.91421028403669, 274.049951514103, 831.153990580889],
+        [23.3447867279627, 3.52006354866419, 0.0631048612249476, 6.43376938757196, 329.679952772848, 78.9634897174291],
+        [16.6579183916909, 3.34826819530982, 0.069939186491281, 4.94727112652624, 289.793609106831, 604.841083559216],
+        [17.9833750413301, 6.59095786277281, 0.143032422653819, 3.55476957162995, 317.186988222796, 859.741707222039],
+        [16.7696172208108, 5.57462622032648, 0.178561014114138, 1.17622184822688, 172.369286423695, 31.792202870718],
+        [18.6280910303071, 9.92886224872726, 0.180681787374913, 1.06898138665638, 180.038269998219, 157.778698336533],
+        [8.51205524253091, 3.80050416048443, 0.173094334769164, 4.66100276373362, 299.804042986972, 327.208829481153]
+    ]
     true_par = true_pars[parse(Int, split(dataset, "_")[1])]
 
 end
@@ -142,7 +155,7 @@ end
     # include the ParticleFilter Setup
     if noise_model == "binomial"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_sparse_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_full_sparse/seir2v_full_sparse_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
 	    prev_counts = data_df[!, "Seroprev"]
 
@@ -174,7 +187,7 @@ end
         print("Binomial noise model not implemented yet.")
     elseif noise_model == "normal"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/seir2v_synth_sparse_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_full_sparse/seir2v_full_sparse_$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
         infc_counts = [x == -1 ? missing : x for x in infc_counts]
@@ -261,13 +274,56 @@ complete_chain = setinfo(complete_chain, (start_time=1.0, stop_time=stop_time))
 print("Mean duration per chain: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/PF_Experiments/seir2v_full_sparse_$(dataset)")
+result_folder = joinpath(basepath, "output/PF_Experiments/$(data_structure)_$(dataset)")
 
-h5open(result_folder * "/sparse_$(dataset)_$(noise_model)_noise_$(prior)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
+h5open(result_folder * "/$(data_structure)_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)
 end
 
 
-open(result_folder * "/time_sparse_$(dataset)_$(noise_model)_noise_$(prior)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.txt", "w") do file
+open(result_folder * "/time_$(data_structure)_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.txt", "w") do file
     write(file, stop_time)
 end
+
+# get true parameter dictionary
+true_par_dict = Dict(
+                :beta => true_par[3],
+                :gamma => true_par[1], 
+                :kappa => true_par[2], 
+                :tevent => true_par[4],
+                :scaling => true_par[5],
+                :I0 => true_par[6]);
+                
+if niter > 10000
+    burnin = Int(niter-10000)
+else
+    burnin = Int(niter/10)
+end
+    
+mixed_chain = complete_chain[burnin:end]
+
+
+
+# evaluate the runs and store last samples for further use as npy.
+include(joinpath(base_path,"code/utils/EvaluateParticleFilter.jl"))
+nparams = length(names(complete_chain))
+stuck_flags = Bool[]
+for c in 1:nchains
+    chain_slice = mixed_chain[:, :, c]
+    all_same = any(abs.(quantile(chain_slice).nt.var"2.5%" - quantile(chain_slice).nt.var"97.5%") .< 1e-10)
+    push!(stuck_flags, all_same)
+end
+if all(stuck_flags)
+   error("All chains got stuck! No usable chains remain.")
+else
+    mixed_chain = mixed_chain[:,:, findall(!, stuck_flags)]
+end
+
+save_samples=false
+if save_samples
+    npzwrite(result_folder * "/sparse_$(dataset)_"*string(nchains)*"chs_"*string(niter)*"it_"*string(nparticles)*"p.npy", mixed_chain.value.data)	
+end
+
+
+diagnostic_df = MCMC_diagnostics(mixed_chain; autocorlag=autocorlag)
+CSV.write(result_folder*"/diagnostics_sparse_$(dataset).csv", diagnostic_df)
