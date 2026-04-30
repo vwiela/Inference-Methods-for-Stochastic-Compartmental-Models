@@ -56,7 +56,7 @@ end
 
     # set dataset 
     data_structure = "seir2v_full_dense"
-    datasets = ["d-1-1", "d-1-2", "d-2-1", "d-2-2", "d-3", "d-4", "d-5", "d-6", "d-7", "d-8", "d-9", "d-10", "d-11", "d-12"]
+    datasets = ["1-1", "1-2", "2-1", "2-2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
     dataset = datasets[task_id+1]
 
     #set prior
@@ -170,7 +170,7 @@ end
     # include the ParticleFilter Setup
     if noise_model == "binomial"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/SEIR2V_full_dense/$(data_structure)_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_full_dense/$(data_structure)_d-$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
 
@@ -195,7 +195,7 @@ end
         print("Binomial noise model not implemented yet.")
     elseif noise_model == "normal"
         # load data and observation settings
-        data_df = CSV.read(base_path * "/data/SEIR2V_full_dense/$(data_structure)_$dataset.csv", DataFrame) # cluster
+        data_df = CSV.read(base_path * "/data/SEIR2V_full_dense/$(data_structure)_d-$dataset.csv", DataFrame) # cluster
         infc_counts = data_df[!, "infection_count"]
         prev_counts = data_df[!, "Seroprev"]
 
@@ -269,7 +269,7 @@ complete_chain = setinfo(complete_chain, (start_time=1.0, stop_time=stop_time))
 print("Mean duration per chain: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/PF_Experiments/SEIR2V_full_dense/seir2v_dense_$(dataset)")
+result_folder = joinpath(basepath, "output/PF_Experiments/SEIR2V_full_dense/seir2v_d_$(dataset)")
 
 h5open(result_folder * "/dense_$(dataset)_$(noise_model)_noise_$(prior)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)
