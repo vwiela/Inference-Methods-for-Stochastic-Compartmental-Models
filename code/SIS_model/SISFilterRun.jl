@@ -32,7 +32,7 @@ end
     using ParticlesDE
     using StaticDistributions
 
-    include(joinpath(base_path, "code/epmodels/sir_model.jl"))
+    include(joinpath(base_path, "code/epmodels/sis_model.jl"))
     include(joinpath(base_path,"code/epmodels/utils/posEM.jl"))
     include(joinpath(base_path,"code/utils/utilities.jl"))
     
@@ -51,7 +51,7 @@ end
     noise_model ="normal"
 
     # set dataset 
-    datasets = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    datasets = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
     dataset = datasets[task_id+1]
 
     # SIR-model settings and parameters
@@ -64,81 +64,51 @@ end
     tspan = (0.0, endtime)
 
     # define SDe problem
-    SDE_problem = SIR_SDEProblem(nothing, N, endtime=endtime, initial_state=u0);
+    SDE_problem = SIS_SDEProblem(nothing, N, endtime=endtime, initial_state=u0);
 
-    # parameters are in the ordering [beta, gamma]
+    # parameters are in the ordering [beta, gamma-1] in the SDEProblem 
     true_pars = [
-        [0.2, 0.05], 
-        [0.22, 0.2],
-        [0.430627818147511, 1/7.30774847648868],
-    	[0.334587638232734, 1/11.0538305689998],
-    	[0.332865045863081, 1/10.0519095319788],
-        [0.496227847255627, 1/8.29271878472793],
-        [0.0444706605366109, 1/29.304886912704],
-        [0.587056974440183, 1/7.12626648556889],
-        [0.392045841507879, 1/9.93678964409357],
-        [0.437955267549603, 1/8.50514341810628],
-        [0.219283474759941, 1/14.7522040091955],
-    	[0.912100668563262, 1/1.23966200311736]
-        ]
+    	[0.521311005598119, 1/3.42695512413054], 
+    	[0.800353512018983, 1/2.48708107481447],
+    	[0.646870392668973, 1/2.25318872554484],
+    	[0.545308691480284, 1/2.17255533150824],
+    	[0.987497220726763, 1/1.2531102040862],
+    	[0.383879690191729, 1/4.09942843298096],
+    	[0.333205709306596, 1/4.63577333643937],
+    	[0.441617915161218, 1/3.82731769256935],
+    	[0.392526138430746, 1/4.35250180575202],
+    	[0.703719389887278, 1/2.24387986072133]
+    ]
     true_par = true_pars[parse(Int, dataset)]
 end    
 
 
 # stuff only needed on workers
 @everywhere workers() begin
-    # get data and define observation model
-    nobs = 2
-    
-    # include the ParticleFilter Setup
-    if noise_model == "binomial"
-        # load data and observation settings
-        data_df = CSV.read(base_path * "/data/SIR/sir_$dataset.csv", DataFrame) # cluster
-        infc_counts = data_df[!, "infection count"]
-        prev_counts = data_df[!, "seroprev"]
 
-        # set observation timepoints
-        tobs = data_df[!, "timepoint"]
+    # get data
+    nobs = 1
 
-        real_data = Vector{Vector{Union{Missing, Float64}}}()
-        for i in range(1, length(tobs))
-            infections_meas = Int64(500*infc_counts[Int64(i)])
-            prev_meas = Int64(500*prev_counts[Int64(i)])
-            append!(real_data, [Vector{Union{Missing, Float64}}([infections_meas, prev_meas])])
-        end
+    # load data and observation settings
+    data_df = CSV.read(base_path * "/data/SIS/sis_$dataset.csv", DataFrame) # cluster
 
-        real_data = collect(SVector{nobs, Union{Float64, Missing}}, real_data)
+    infc_counts = data_df[!, "infection_count"]
 
-        # add initial missing
-        if tobs[1] != 0.0
-            real_data = vcat(missing, real_data)
-        end;
+    # get measurement timepoints
+    tobs = data_df[!, "timepoint"]
 
-        # load model
-        print("Binomial noise model not implemented yet.")
-    elseif noise_model == "normal"
-        # load data and observation settings
-        data_df = CSV.read(base_path * "/data/SIR/sir_$dataset.csv", DataFrame) # cluster
-        # print(data_df)
-        infc_counts = data_df[!, "infection count"]
-        prev_counts = data_df[!, "seroprev"]
+    real_data = collect(SVector{nobs, Union{Float64, Missing}}, real_data)
 
-        real_data = [[infc_counts[i], prev_counts[i]] for i in eachindex(infc_counts)]
-        real_data = collect(SVector{nobs, Union{Float64, Missing}}, real_data)
+    # augment data with initial observation
+    if tobs[1] != problem.tspan[1]
+        real_data = vcat(missing, real_data)
+    end;
 
-        # set observation timepoints
-        tobs = data_df[!, "timepoint"]
-        # add initial missing
-        if tobs[1] != 0.0
-            real_data = vcat(missing, real_data)
-        end;
-        # observation noise
-        noise_infc = data_df[!, "Std"]
-        noise_prev = data_df[!, "std"]
+    # observation noise
+    noise_infc = data_df[!, "Std"] 
 
-        # load model
-        include("SIRNormalFilterSetup.jl")
-    end
+    # load model
+    include("SISFilterSetup.jl")
 
     # convert PyPesto result to MCMCChains.jl chain type
     function Chains_from_pypesto(result; kwargs...)
@@ -184,7 +154,7 @@ end
     pypesto_sampler = pypesto.sample.AdaptiveMetropolisSampler();
 
     # get initial parameters
-    init_par = rand(SIR_Prior())
+    init_par = rand(SIS_Prior())
         
      # function for sampling and conversion 
     function chain()
@@ -222,14 +192,14 @@ stop_time = mean([all_chains[i].time for i in 1:nworkers()])
 print("Mean runtime for $nparticles particles $niter iterations: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/PF_Experiments/SIR/sir_dense_$(dataset)")
+result_folder = joinpath(basepath, "output/PF_Experiments/SIS/sis_$(dataset)")
 
-h5open(result_folder * "/SIR_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
+h5open(result_folder * "/SIS_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)
 end
 
 
-open(result_folder * "/time_SIR_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.txt", "w") do file
+open(result_folder * "/time_SIS_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.txt", "w") do file
     write(file, stop_time)
 end
 
@@ -274,10 +244,10 @@ if size(mixed_chain, 3) == 0
 end
 
 if save_samples
-    npzwrite(result_folder * "/sir_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.npy", mixed_chain.value.data)	
+    npzwrite(result_folder * "/sis_$(dataset)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.npy", mixed_chain.value.data)
 end
 
 diagnostic_df = MCMC_diagnostics(mixed_chain; autocorlag=autocorlag)
-CSV.write(experiment_folder*"/diagnostics_sir_$(dataset).csv", diagnostic_df)
+CSV.write(experiment_folder*"/diagnostics_sis_$(dataset).csv", diagnostic_df)
 
 

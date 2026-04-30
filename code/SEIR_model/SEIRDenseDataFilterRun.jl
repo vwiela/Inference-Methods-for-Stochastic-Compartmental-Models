@@ -56,7 +56,7 @@ end
 
     # set dataset 
     data_structure = "seir2v_full_dense"
-    datasets = ["1", "2", "3", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    datasets = ["d-1-1", "d-1-2", "d-2-1", "d-2-2", "d-3", "d-4", "d-5", "d-6", "d-7", "d-8", "d-9", "d-10", "d-11", "d-12"]
     dataset = datasets[task_id+1]
 
     #set prior
@@ -269,7 +269,7 @@ complete_chain = setinfo(complete_chain, (start_time=1.0, stop_time=stop_time))
 print("Mean duration per chain: ", stop_time)
 
 # store results
-result_folder = joinpath(basepath, "output/PF_Experiments/seir2v_dense_$(dataset)")
+result_folder = joinpath(basepath, "output/PF_Experiments/SEIR2V_full_dense/seir2v_dense_$(dataset)")
 
 h5open(result_folder * "/dense_$(dataset)_$(noise_model)_noise_$(prior)_"*string(nworkers())*"chs_"*string(niter)*"it_"*string(nparticles)*"p.h5", "w") do f
   write(f, complete_chain)

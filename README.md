@@ -32,10 +32,12 @@ Following folders and content are available in this repository:
     Python package with BayesFlow wrappers for CNF training, prior definitions, and routines for generating comparison figures.
   - **epmodels**  
     Contains the stochastic compartmental models used in experiments:
+    - `sis` — simple Susceptible–Infected–Susceptible (SIS) model
     - `sir` — classic Susceptible–Infected–Recovered (SIR) model
     - `seir2v` — Susceptible–Exposed–Infected–Recovered (SEIR) model with two variants
   - **notebooks**  
-    Jupyter notebooks demonstrating experiments for both models:
+    Jupyter notebooks demonstrating experiments for all three models:
+    - `SIS_model` — notebooks for the SIS model
     - `SIR_model` — notebooks for the SIR model
     - `SEIR_model` — notebooks for the SEIR‑2V model
   - **pf_utils**  

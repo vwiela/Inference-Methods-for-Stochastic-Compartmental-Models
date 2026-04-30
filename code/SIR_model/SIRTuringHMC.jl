@@ -43,7 +43,7 @@ true_par = true_pars[parse(Int, dataset)]
 
 # set paths
 base_path = "Inference-Methods-for-Stochastic-Compartmental-Models"   # adjust
-result_folder = mkpath(base_path * "/output/SIR/sir_$(dataset)")
+result_folder = mkpath(base_path * "/output/PF_Experiments/SIR/sir_$(dataset)")
 
 # -----------------------
 # Time grid
