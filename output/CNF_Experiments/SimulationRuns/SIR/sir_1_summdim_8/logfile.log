@@ -1,0 +1,3 @@
+2026-03-24 13:31:43,870 INFO Time for training Amortizer_sir_1_summdim_8: 45902.28125
+2026-03-24 13:32:56,495 INFO Time for validating Amortizer_sir_1_summdim_8: 547.46875
+2026-03-24 13:33:36,406 INFO Time for infering sir_1_summdim_8 via Amortizer_sir_1_summdim_8: 39.515625

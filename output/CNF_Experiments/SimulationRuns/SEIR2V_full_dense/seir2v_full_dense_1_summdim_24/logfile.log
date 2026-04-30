@@ -1,0 +1,3 @@
+2026-03-24 13:32:56,625 INFO Time for training Amortizer_seir2v_full_dense_1_summdim_24: 60314.09375
+2026-03-24 13:36:52,848 INFO Time for validating Amortizer_seir2v_full_dense_1_summdim_24: 1934.984375
+2026-03-24 13:43:26,533 INFO Time for infering seir2v_full_dense_1_summdim_24 via Amortizer_seir2v_full_dense_1_summdim_24: 389.375

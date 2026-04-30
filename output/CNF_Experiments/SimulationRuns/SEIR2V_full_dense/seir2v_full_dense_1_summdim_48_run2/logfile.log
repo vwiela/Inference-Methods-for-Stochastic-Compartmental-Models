@@ -1,0 +1,3 @@
+2026-03-26 15:18:11,178 INFO Time for training Amortizer_seir2v_full_dense_1_summdim_48_run2: 68561.515625
+2026-03-26 15:22:28,895 INFO Time for validating Amortizer_seir2v_full_dense_1_summdim_48_run2: 1966.328125
+2026-03-26 15:28:49,728 INFO Time for infering seir2v_full_dense_1_summdim_48_run2 via Amortizer_seir2v_full_dense_1_summdim_48_run2: 384.34375

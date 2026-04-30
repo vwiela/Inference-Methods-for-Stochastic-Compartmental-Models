@@ -1,0 +1,3 @@
+2026-03-28 23:25:57,757 INFO Time for training Amortizer_sis_1_summdim_16_run2: 35817.890625
+2026-03-28 23:26:41,568 INFO Time for validating Amortizer_sis_1_summdim_16_run2: 438.984375
+2026-03-28 23:26:57,250 INFO Time for infering sis_1_summdim_16_run2 via Amortizer_sis_1_summdim_16_run2: 16.328125

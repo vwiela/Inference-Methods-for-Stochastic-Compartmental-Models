@@ -1,0 +1,3 @@
+2026-03-27 05:39:34,952 INFO Time for training Amortizer_seir2v_reparam_dense_1_summdim_12_run2: 67537.328125
+2026-03-27 05:43:48,892 INFO Time for validating Amortizer_seir2v_reparam_dense_1_summdim_12_run2: 1565.296875
+2026-03-27 05:49:16,314 INFO Time for infering seir2v_reparam_dense_1_summdim_12_run2 via Amortizer_seir2v_reparam_dense_1_summdim_12_run2: 303.984375

@@ -1,0 +1,3 @@
+2026-03-26 21:52:25,199 INFO Time for training Amortizer_seir2v_full_sparse_1_summdim_24_run2: 58687.5625
+2026-03-26 21:56:40,926 INFO Time for validating Amortizer_seir2v_full_sparse_1_summdim_24_run2: 1740.890625
+2026-03-26 22:03:50,701 INFO Time for infering seir2v_full_sparse_1_summdim_24_run2 via Amortizer_seir2v_full_sparse_1_summdim_24_run2: 423.578125
